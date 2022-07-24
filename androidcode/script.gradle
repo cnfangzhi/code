@@ -1,0 +1,11 @@
+afterEvaluate {
+    println tasks.getByName("packageDebug")
+    task zip2(type: Zip) {
+        archiveName "outputs3.zip"// 输出的文件名字
+        destinationDir file("${buildDir}/custom")// 输出的文件存放的文件夹
+        from tasks.getByName("packageDebug").outputs.files// 输入的文件
+        tasks.getByName("packageDebug").outputs.files.each {
+            println it
+        }
+    }
+}

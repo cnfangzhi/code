@@ -1,0 +1,183 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        applicationId "com.example.gradledemo"
+        minSdk 26
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+
+class ZipTask extends DefaultTask {
+
+//    @Input
+//    @Optional
+    // 表示可选
+    String from
+
+//    @OutputFile
+//    @Optional
+    // 表示可选
+    File out
+
+    ZipTask() {
+        group "自定义任务"
+        description "自定义任务描述"
+        outputs.upToDateWhen {
+            false//  增量构建，每次都会开启，不会跳过任务
+        }
+    }
+
+    @TaskAction
+    void fun() {
+        println " @TaskAction fun()"
+        println from
+        println out
+
+        //文件进行操作
+        //inputs.files.first()
+        println inputs.files.singleFile
+        def inFile = inputs.files.singleFile
+
+        def file = outputs.files.singleFile
+        file.createNewFile()
+        file.text = inFile.text
+    }
+}
+
+task myTask(type: ZipTask) {
+    from = "a/b/c" // 输入
+    out = file("test.txt") // 输出
+    inputs.file file('build.gradle')
+    outputs.file file('test.txt')
+}
+
+afterEvaluate {
+
+    println tasks.getByName("packageDebug")
+
+    task zip(type: Zip) {
+        archiveName "outputs2.zip"// 输出的文件名字
+        destinationDir file("${buildDir}/custom")// 输出的文件存放的文件夹
+        from tasks.getByName("packageDebug").outputs.files// 输入的文件
+        tasks.getByName("packageDebug").outputs.files.each {
+            println it
+        }
+    }
+}
+
+// Gradle提供的钩子函数
+// 配置阶段：
+gradle.beforeProject {
+    println "gradle.beforeProject"
+}
+gradle.afterProject {
+    println "gradle.afterProject"
+}
+gradle.taskGraph.whenReady {
+    println "gradle.taskGraph.whenReady"
+}
+beforeEvaluate {
+    // 在root无效
+    println "beforeEvaluate"
+}
+afterEvaluate {
+    println "afterEvaluate"
+}
+
+// 为gradle设置监听
+gradle.addProjectEvaluationListener(new ProjectEvaluationListener() {
+    @Override
+    void beforeEvaluate(Project project) {
+        println "beforeEvaluate"
+    }
+
+    @Override
+    void afterEvaluate(Project project, ProjectState state) {
+        println "afterEvaluate"
+    }
+})
+gradle.addBuildListener(new BuildListener() {
+    @Override
+    void settingsEvaluated(Settings settings) {
+
+    }
+
+    @Override
+    void projectsLoaded(Gradle gradle) {
+
+    }
+
+    @Override
+    void projectsEvaluated(Gradle gradle) {
+
+    }
+
+    @Override
+    void buildFinished(BuildResult result) {
+
+    }
+})
+
+
+// 插件：1. 脚本插件
+apply from: "../script.gradle"
+// 2. 二进制插件
+
+class MyPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project target) {
+        println "MyPlugin apply"
+
+        target.afterEvaluate {
+            println target.tasks.getByName("packageDebug")
+            target.task(type: Zip, "zipDebug") {
+                archiveName "outputs4.zip"// 输出的文件名字
+                destinationDir target.file("${target.buildDir}/custom")// 输出的文件存放的文件夹
+                from target.tasks.getByName("packageDebug").outputs.files// 输入的文件
+                target.tasks.getByName("packageDebug").outputs.files.each {
+                    println it
+                }
+            }
+        }
+    }
+}
+
+apply plugin: MyPlugin
+apply plugin: MyPlugin2

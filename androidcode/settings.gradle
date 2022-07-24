@@ -1,0 +1,30 @@
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        jcenter() // Warning: this repository is going to shut down soon
+    }
+}
+rootProject.name = "android code"
+include ':app'
+include ':nativelib'
+include ':handler'
+//include ':architect'
+include ':javalib'
+include ':annotations'
+include ':compiler'
+include ':butterknife'
+include ':testlib'
+include ':kotlinlib'
+
+// 初始化阶段：
+gradle.projectsLoaded {
+    println "gradle.projectsLoaded"
+}
+gradle.settingsEvaluated {
+    println "gradle.settingsEvaluated"
+}
+
+include ':gradledemo'
+include ':gradlelibrary'
