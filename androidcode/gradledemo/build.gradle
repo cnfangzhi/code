@@ -9,20 +9,141 @@ android {
 
     defaultConfig {
         applicationId "com.example.gradledemo"
+//        applicationIdSuffix "aaa" // 往applicationId加后缀
         minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
+        //versionNameSuffix '' //versionName后缀
+
+        manifestPlaceholders = [CHANNEL_VALUE: 'dongnao/maniu']
+        resValue 'string', 'aaa', 'aaa'
+        buildConfigField 'Boolean', 'DEBUG', 'false'
+
+        // DexOpt会把每一个类的方法id检索起来，存在一个链表结构里面。
+        // 这个链表的长度是用short类型来保存的，这就使得方法数id不能超过65535。
+        // 一个dex方法数不能超出65535.
+        // 1.设置multiDexEnabled true
+        // 2.创建MyApplication 继承MultiDexApplication
+        // 3.AndroidManifest指定MyApplication
+        // 4.或者重写attachBaseContext 调用MultiDex.install(this)
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    // 每个BuildType都有一个SourceSet
+    // 包含源码，源文件等信息
+    sourceSets {
+        main {
+//            manifest.srcFile 'src/main/debug/AndroidManifest.xml'
+//            java.srcDirs = ['src']
+//            resources.srcDirs = ['src']
+//            aidl.srcDirs = ['src']
+//            renderscript.srcDirs = ['src']
+//            res.srcDirs = ['res']
+//            assets.srcDirs = ['assets']
+//            jniLibs.srcDirs = ['libs']
+
+            java {
+                //exclude 'src/main/com/dongnaoedu/gradledemo04/Test.java'
+//                if(DEBUG){
+//
+//                }else {
+//
+//                }
+                //srcDir 'src/java'
+            }
+
+            /*resources{
+                srcDir 'src/java'
+            }*/
         }
     }
+
+    // adb的操作选项
+    adbOptions {
+        installOptions '-r', '-s'
+        //-l, -t, -d, -g
+        // -d 允许降级安装
+        // -g 为应有获取所有运行时的权限
+    }
+
+    javaCompileOptions {
+        annotationProcessorOptions {
+            arguments += [A: 'a']
+        }
+    }
+
+//    flavorDimensions "channel"/*, "charge"*/ // 维度，就是针对一种类型的产品风味的描述
+
+    // [flavorDimensions]X[productFlavors]x[release,debug]
+    // 产品风味的自定义，也就是变种
+//    productFlavors {
+//        huawei {
+//            dimension "channel"
+//            manifestPlaceholders = [CHANNEL_VALUE: 'huawei']
+//        }
+//
+//        oppo {
+//            dimension "channel"
+//            manifestPlaceholders = [CHANNEL_VALUE: 'oppo']
+//        }
+//
+//        free {
+//            dimension "charge"
+//        }
+//
+//        paid {
+//            dimension "charge"
+//        }
+//    }
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                // 遍历所有的产品风味
+                productFlavors.each { flavor ->
+                    //gradle_v1.0_huawei_release.apk
+                    def fileName = "gradle_v${defaultConfig.versionName}_${flavor.manifestPlaceholders.CHANNEL_VALUE}_release.apk"
+                    outputFileName = fileName
+                }
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            shrinkResources true // 清理无效资源
+            minifyEnabled true // 是否启用代码混淆
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug{
+
+        }
+        custom {
+            initWith release
+            applicationIdSuffix "custom"
+        }
+    }
+
+    // 配置应用的签名信息
+    signingConfigs {
+        release {
+            storeFile file('key_store.jks')
+            storePassword "a123123"
+            keyAlias "aaa"
+            keyPassword "a123123"
+        }
+        debug {
+            storeFile file('key_store.jks')
+            storePassword "a123123"
+            keyAlias "aaa"
+            keyPassword "a123123"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -32,10 +153,25 @@ android {
     }
 }
 
+configurations {
+    configuration {
+        all*.exclude module:"annotation"
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.constraintlayout:constraintlayout:2.0.0'
+    }
+}
+
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation ("androidx.appcompat:appcompat:1.3.0") {
+        exclude group: 'androidx.savedstate',module: 'savedstate'
+//        exclude group: 'androidx.drawerlayout', module: 'drawerlayout'
+    }
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.13.2'
