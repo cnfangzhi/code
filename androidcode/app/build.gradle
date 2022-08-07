@@ -32,8 +32,8 @@ android {
 }
 
 dependencies {
-    annotationProcessor project(':compiler')
     implementation project(':annotations')
+    annotationProcessor project(':compiler')
     implementation project(':butterknife')
     implementation project(':nativelib')
     implementation deps.androidx.appcompat

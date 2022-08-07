@@ -1,0 +1,129 @@
+project.ext {
+
+    // 模块是否单独运行调试
+    isModuleDebug = false
+
+    applicationId = "com.fz.gradledemo06"
+
+    libs = [
+            "appcompat"       : deps.androidx.appcompat,
+            "k-stdlib"        : deps.kotlin.stdLibJdk8,
+            "ktx"             : deps.androidx.corektx,
+            "material"        : deps.material,
+            "constraintlayout": deps.androidx.constraintlayout,
+            "arouter"         : "com.alibaba:arouter-api:1.5.1"
+    ]
+
+    apts = [
+            "ARouterCompiler": "com.alibaba:arouter-compiler:1.5.1",
+    ]
+
+    // 专门用来设置application module的
+    setAppDefaultConfig = {
+        project ->
+            project.apply plugin: "com.android.application"
+            project.apply plugin: "kotlin-android"
+            setAndroidConfig project.android
+            setDependencies project.dependencies
+    }
+
+    setAndroidConfig = {
+        android ->
+            android.compileSdkVersion project.versions.compileSdk
+
+            android.defaultConfig {
+                minSdkVersion project.versions.minSdk
+                targetSdkVersion project.versions.targetSdk
+                versionCode project.versions.versionCode
+                versionName project.versions.versionName
+
+                if (project.name == 'app') {
+                    applicationId project.applicationId
+                } else if (project.isModuleDebug) {
+                    applicationId project.applicationId
+                    applicationIdSuffix = project.name
+                }
+
+                testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+                javaCompileOptions {
+                    annotationProcessorOptions {
+                        // 路由每个模块的名称
+                        arguments += [AROUTER_MODULE_NAME: project.name]
+                    }
+                }
+            }
+
+            android.buildTypes {
+                release {
+                    minifyEnabled false
+                    proguardFiles android.getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                }
+            }
+            android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+            android.kotlinOptions {
+                jvmTarget = '1.8'
+            }
+
+            android.sourceSets {
+                main {
+                    if (project.name != 'app') {
+                        if (project.isModuleDebug) {
+                            manifest.srcFile "src/debug/AndroidManifest.xml"
+                        } else {
+                            manifest.srcFile "src/main/AndroidManifest.xml"
+                        }
+                    }
+                }
+            }
+    }
+
+    // 专门为library情况下进行配置
+    setLibDefalutConfig = {
+        project.apply plugin: "com.android.library"
+        project.apply plugin: "kotlin-android"
+        setAndroidConfig project.android
+        setDependencies project.dependencies
+    }
+
+    setDependencies = {
+        dependencies ->
+            delegate = dependencies
+            project.libs.each {
+                k, v -> implementation v
+            }
+            project.apts.each {
+                k, v -> annotationProcessor v
+            }
+            testImplementation deps.junit
+            androidTestImplementation deps.androidx.test.junit
+            androidTestImplementation deps.androidx.test.espressoCore
+
+            if (project.name == 'app' && !project.isModuleDebug) {
+                implementation project(':component:buissiness:login')
+                implementation project(':component:buissiness:main')
+            }
+    }
+
+}
+
+if (project.name == 'app' || isModuleDebug) {
+    // 除了app以外，还有组件调试的情况，就直接调用setAppDefaultConfig
+    project.setAppDefaultConfig project
+} else {
+    project.setLibDefalutConfig project
+}
+
+// 组件化开发：
+// 1. 分层划分： 3-4层
+//  - app
+//  - 业务组件层 ： application /library
+//  - 功能组件层 ： application /library
+//  - 基础组件层 ： library
+// 2. 进行每层核心模块/组件的开发
+// 3. 通过路由来实现组件之间的通信
+
+

@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * version: 1.0
  */
 @Target(ElementType.FIELD)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface BindView {
     int value();
 }

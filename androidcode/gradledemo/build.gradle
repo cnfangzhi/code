@@ -26,7 +26,7 @@ android {
         // 1.设置multiDexEnabled true
         // 2.创建MyApplication 继承MultiDexApplication
         // 3.AndroidManifest指定MyApplication
-        // 4.或者重写attachBaseContext 调用MultiDex.install(this)
+        // 4.或者重写Application的attachBaseContext 调用MultiDex.install(this)
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -46,7 +46,7 @@ android {
 //            jniLibs.srcDirs = ['libs']
 
             java {
-                //exclude 'src/main/com/dongnaoedu/gradledemo04/Test.java'
+                //exclude 'src/main/com/fz/gradledemo04/Test.java'
 //                if(DEBUG){
 //
 //                }else {
@@ -62,18 +62,24 @@ android {
     }
 
     // adb的操作选项
-    adbOptions {
-        installOptions '-r', '-s'
-        //-l, -t, -d, -g
-        // -d 允许降级安装
-        // -g 为应有获取所有运行时的权限
-    }
+//    adbOptions {
+//        timeOutInMs = 5000 // ms
+//
+//        installOptions '-r', '-s'
+//        //-l, -t, -d, -g
+//        // -d 允许降级安装
+//        // -g 为应有获取所有运行时的权限
+//        // -l 锁定该应用程序
+//        // -r 替换已经存在的应用程序，强制安装
+//        // -t 允许测试包
+//        // -s 把应用装到sk卡上
+//    }
 
-    javaCompileOptions {
-        annotationProcessorOptions {
-            arguments += [A: 'a']
-        }
-    }
+//    javaCompileOptions {
+//        annotationProcessorOptions {
+//            arguments += [A: 'a']
+//        }
+//    }
 
 //    flavorDimensions "channel"/*, "charge"*/ // 维度，就是针对一种类型的产品风味的描述
 
@@ -167,16 +173,16 @@ configurations.all {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation ("androidx.appcompat:appcompat:1.3.0") {
+    implementation deps.androidx.corektx
+    implementation ("${deps.androidx.appcompat}") {
         exclude group: 'androidx.savedstate',module: 'savedstate'
 //        exclude group: 'androidx.drawerlayout', module: 'drawerlayout'
     }
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation deps.material
+    implementation deps.androidx.constraintlayout
+    testImplementation deps.junit
+    androidTestImplementation deps.androidx.test.junit
+    androidTestImplementation deps.androidx.test.espressoCore
 }
 
 class ZipTask extends DefaultTask {

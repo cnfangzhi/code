@@ -28,3 +28,9 @@ gradle.settingsEvaluated {
 
 include ':gradledemo'
 include ':gradlelibrary'
+
+include ':component:app'
+include ':component:buissiness:main'
+include ':component:core:common'
+include ':component:base:baseLib'
+include ':component:buissiness:login'

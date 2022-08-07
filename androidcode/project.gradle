@@ -12,7 +12,7 @@ project(':app') {
         buildToolsVersion "30.0.2"
 
         defaultConfig {
-            applicationId "com.dongnaoedu.gradledemo"
+            applicationId "com.fz.gradledemo"
             minSdkVersion 28
             targetSdkVersion 30
             versionCode 1
@@ -37,14 +37,14 @@ project(':app') {
     }
 
     dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-        implementation 'androidx.core:core-ktx:1.2.0'
-        implementation 'androidx.appcompat:appcompat:1.1.0'
-        implementation 'com.google.android.material:material:1.1.0'
-        implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-        testImplementation 'junit:junit:4.+'
-        androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-        androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+        implementation deps.kotlin.stdLibJdk8
+        implementation deps.androidx.corektx
+        implementation deps.androidx.appcompat
+        implementation deps.material
+        implementation deps.androidx.constraintlayout
+        testImplementation deps.junit
+        androidTestImplementation deps.androidx.test.junit
+        androidTestImplementation deps.androidx.test.espressoCore
     }
 
 }

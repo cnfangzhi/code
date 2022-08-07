@@ -21,6 +21,8 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -31,6 +33,8 @@ import javax.lang.model.util.Elements;
  * Created by hcDarren on 2017/9/9.
  */
 @AutoService(Processor.class)
+@SupportedAnnotationTypes("com.butterknife.annotations.BindView")
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ButterKnifeProcessor extends AbstractProcessor {
     private Filer mFiler;
     private Elements mElementUtils;
@@ -67,9 +71,6 @@ public class ButterKnifeProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-        // System.out.println("------------------------>");
-        // System.out.println("------------------------>");
-        // System.out.println("------------------------>");
          System.out.println("------------------------>");
 
         // process 方法代表的是，有注解就都会进来 ，但是这里面是一团乱麻
@@ -108,7 +109,7 @@ public class ButterKnifeProcessor extends AbstractProcessor {
 
             // 实现 unbind 方法
             // android.support.annotation.CallSuper
-            ClassName callSuperClassName = ClassName.get("android.support.annotation","CallSuper");
+            ClassName callSuperClassName = ClassName.get("androidx.annotation","CallSuper");
             MethodSpec.Builder unbindMethodBuilder = MethodSpec.methodBuilder("unbind")
                     .addAnnotation(Override.class)
                     .addModifiers(Modifier.PUBLIC,Modifier.FINAL)
