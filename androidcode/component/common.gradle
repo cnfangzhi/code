@@ -32,7 +32,7 @@ project.ext {
             android.compileSdkVersion project.versions.compileSdk
 
             android.defaultConfig {
-                minSdkVersion project.versions.minSdk
+                minSdkVersion 28
                 targetSdkVersion project.versions.targetSdk
                 versionCode project.versions.versionCode
                 versionName project.versions.versionName

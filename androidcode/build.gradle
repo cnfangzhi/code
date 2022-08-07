@@ -36,7 +36,7 @@ buildscript {
 
         'release'     : [
             'runtime' : "com.jakewharton:butterknife:${versions.butterknife}",
-            'com.butterknife.compiler': "com.jakewharton:butterknife-com.butterknife.compiler:${versions.butterknife}"
+            'com_butterknife_compiler': "com.jakewharton:butterknife-com.butterknife.compiler:${versions.butterknife}"
         ],
         'kotlin'      : [
             'stdLibJdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}",

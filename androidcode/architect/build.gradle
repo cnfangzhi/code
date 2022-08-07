@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk versions.compileSdk
 
     defaultConfig {
-        minSdk 21
-        targetSdk 30
+        minSdk versions.minSdk
+        targetSdk versions.targetSdk
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -38,7 +38,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
     implementation deps.release.runtime
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    annotationProcessor deps.release.com.butterknife.compiler
+    annotationProcessor deps.release.com_butterknife_compiler
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 // Because RxAndroid releases are few and far between, it is recommended you also
 // explicitly depend on RxJava's latest version for bug fixes and new features.
