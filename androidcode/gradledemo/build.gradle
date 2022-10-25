@@ -1,7 +1,12 @@
+import com.fz.plugin.bs.BSPlugin
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'bsplugin'
 }
+
+//apply plugin: BSPlugin
 
 
 android {
